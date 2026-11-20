@@ -24,13 +24,12 @@ jobs:
       - run: npm test
       - run: npm pack --dry-run
 
-  publish:
+  release:
     if: github.ref_type == 'tag'
     needs: verify
     runs-on: ubuntu-24.04
     permissions:
-      contents: read
-      packages: write
+      contents: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -39,14 +38,23 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
           node-version: 24.15.0
-          registry-url: https://npm.pkg.github.com
-          scope: '@thepropervolume'
           package-manager-cache: false
       - name: Check release tag
         run: |
           test "$GITHUB_REF_NAME" = "v$(node -p "require('./package.json').version")"
           git merge-base --is-ancestor "$GITHUB_SHA" origin/main
       - run: npm ci --no-audit
-      - run: npm publish
+      - name: Create the private npm tarball release
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir release-assets
+          npm pack --pack-destination release-assets
+          version="$(node -p "require('./package.json').version")"
+          archive="thepropervolume-karaoke-core-$version.tgz"
+          (cd release-assets && sha256sum "$archive" > SHA256SUMS.txt)
+          gh release create "$GITHUB_REF_NAME" --verify-tag \
+            --title "Karaoke Core $version" \
+            --notes "Built from $GITHUB_SHA. Verify SHA256SUMS.txt before installing the npm tarball." \
+            "release-assets/$archive" release-assets/SHA256SUMS.txt

@@ -2,9 +2,9 @@
 
 Karaoke Core is the shared TypeScript package for The Proper Volume Karaoke Booth and Studio. Its first version defines lyric cue and word timing in seconds and supports plain LRC, Enhanced LRC and SRT interchange.
 
-Install the pinned package from GitHub Packages and use it in the browser renderer or under Node 22 and newer.
+Download the npm tarball and checksum from the [private releases](https://github.com/thepropervolume/proper-karaoke-core/releases). The package works in a browser renderer or under Node 22 and newer.
 
-    npm install --save-exact @thepropervolume/karaoke-core@0.1.0
+    npm install --save-exact ./vendor/thepropervolume-karaoke-core-0.1.0.tgz
 
 Import the shared API from the package root:
 
@@ -20,18 +20,14 @@ Both parsers accept an optional makeId callback. LRC retains timed words and use
 
 ## Building and releasing
 
-Run npm ci and npm test. npm pack builds the distributable with runtime files and TypeScript declarations. Release by tagging a commit on main with the package version, such as v0.1.0. The workflow runs the tests and publishes to the private GitHub npm registry.
+Run npm ci and npm test. npm pack builds the distributable with runtime files and TypeScript declarations. Release by tagging a commit on main with the package version, such as v0.1.0. The workflow runs the tests and creates a private GitHub release with the npm tarball and its SHA-256 checksum.
 
-## Private package access
+## Installing in Booth or Studio
 
-Configure the @thepropervolume npm scope for GitHub Packages in both apps. For local installs, authenticate with a personal access token that has read:packages and package read access. Never commit tokens or include them in lockfile URLs.
+Download the versioned asset from the private release and verify it against SHA256SUMS.txt. On Windows use Get-FileHash -Algorithm SHA256. On Linux or macOS use sha256sum or shasum -a 256.
 
-~~~ini
-@thepropervolume:registry=https://npm.pkg.github.com
-~~~
-
-In the package settings, grant GitHub Actions read access to proper-karaoke-booth and proper-karaoke-studio. Give each consuming workflow packages: read and contents: read, configure setup-node with the GitHub Packages registry for the scope, and pass its GITHUB_TOKEN as NODE_AUTH_TOKEN during npm ci. Verify a fresh install and the app's production build in each repository before switching imports.
+Put the verified tarball and checksum under vendor/ in the consuming repository. Run the pinned install shown above, then commit the tarball, package.json and package-lock.json with that app's integration changes. This lets npm ci resolve the same package from a clean checkout without registry credentials. Repeat the verification for every version upgrade.
 
 The first integration should replace Studio's duplicate LRC and SRT adapters and timeline types. Migrate Booth's matching timing types after its parser and renderer accept the same fields. Keep app-specific format wrappers available during the migration.
 
-See the [GitHub npm registry setup](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry) and [package access settings](https://docs.github.com/en/packages/learn-github-packages/configuring-a-packages-access-control-and-visibility).
+GitHub Packages rejected the initial private npm registry publish because the organization had reached its package billing limit. The private release artifacts provide a working distribution path. A future registry migration would require [package read access](https://docs.github.com/en/packages/learn-github-packages/configuring-a-packages-access-control-and-visibility) for both consuming repositories.
