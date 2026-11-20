@@ -1,9 +1,9 @@
 {
   "name": "@thepropervolume/karaoke-core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Provider-neutral authoring and playback primitives for The Proper Volume karaoke apps",
   "type": "module",
-  "license": "UNLICENSED",
+  "license": "MPL-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/thepropervolume/proper-karaoke-core.git"
@@ -12,7 +12,7 @@
   "exports": {
     ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" }
   },
-  "files": ["dist"],
+  "files": ["dist", "src", "tsconfig.json", "LICENSING.md"],
   "publishConfig": { "registry": "https://npm.pkg.github.com", "access": "restricted" },
   "scripts": {
     "build": "tsc -p tsconfig.json",
