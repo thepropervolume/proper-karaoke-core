@@ -2,7 +2,7 @@
 
 Karaoke Core is the shared TypeScript package for The Proper Volume Karaoke Booth and Studio. Its first version defines lyric cue and word timing in seconds and supports plain LRC, Enhanced LRC and SRT interchange.
 
-Download the npm tarball and checksum from the [GitHub releases](https://github.com/thepropervolume/proper-karaoke-core/releases). The package works in a browser renderer or under Node 22 and newer.
+Run `npm ci` and `npm pack` from a Core checkout to build the npm tarball. Published tarballs and checksums are also available from [GitHub Releases](https://github.com/thepropervolume/proper-karaoke-core/releases). The package works in a browser renderer or under Node 22 and newer.
 
     npm install --save-exact ./vendor/thepropervolume-karaoke-core-0.1.1.tgz
 
