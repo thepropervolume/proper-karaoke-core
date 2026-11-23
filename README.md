@@ -4,7 +4,7 @@ Karaoke Core is the shared TypeScript package for The Proper Volume Karaoke Boot
 
 Run `npm ci` and `npm pack` from a Core checkout to build the npm tarball. Published tarballs and checksums are also available from [GitHub Releases](https://github.com/thepropervolume/proper-karaoke-core/releases). The package works in a browser renderer or under Node 22 and newer.
 
-    npm install --save-exact ./vendor/thepropervolume-karaoke-core-0.1.1.tgz
+    npm install --save-exact ./vendor/thepropervolume-karaoke-core-0.1.2.tgz
 
 Import the shared API from the package root:
 
@@ -17,6 +17,14 @@ const subtitles = toSrt(cues);
 ~~~
 
 Both parsers accept an optional makeId callback. LRC retains timed words and uses a closing timestamp when present. SRT provides line timing. Studio project JSON and TPV kit formats belong in Studio. Catalog providers, authentication, IPC and the app interfaces belong in their respective repositories.
+
+## Desktop updates
+
+Import `@thepropervolume/karaoke-core/desktop-updates` from the Electron main process. The CommonJS export can also be used from ESM. Pass `product` (`booth` or `studio`), the installed release's numeric `runningVersion`, and a private application `cacheDirectory` to `createDesktopUpdater`. The published Ed25519 public key is built in. Tests can pass their own `publicKey` and `fetch`.
+
+The updater reads the fixed product, operating-system and architecture feed at `https://release.thepropervolume.com`. It verifies the manifest signature before selecting a newer compatible release, then streams any requested package to the private cache and verifies its length and SHA-256. Package URLs are constructed from signed version and filename fields. Keep the exact returned update object in the main process and pass only its display data to the renderer.
+
+`notify` checks for updates and returns a release for review. `download` and `install` both stage a verified package. `off` skips automatic checks while allowing an explicit `check({ manual: true })`. `download(update)` can stage a release on request. `prepareInstall(update)` rechecks the cached bytes just before the app hands the package to the OS. The caller controls prompts and when an install can begin. On Linux, `applyAppImageUpdate(update, currentAppImage)` replaces the exact running AppImage with a verified sibling file without restarting the app.
 
 ## Building and releasing
 

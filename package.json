@@ -1,6 +1,6 @@
 {
   "name": "@thepropervolume/karaoke-core",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Provider-neutral authoring and playback primitives for The Proper Volume karaoke apps",
   "type": "module",
   "license": "MPL-2.0",
@@ -8,16 +8,37 @@
     "type": "git",
     "url": "https://github.com/thepropervolume/proper-karaoke-core.git"
   },
-  "engines": { "node": ">=22" },
-  "exports": {
-    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" }
+  "engines": {
+    "node": ">=22"
   },
-  "files": ["dist", "src", "tsconfig.json", "LICENSING.md"],
-  "publishConfig": { "registry": "https://npm.pkg.github.com", "access": "restricted" },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./desktop-updates": {
+      "types": "./dist/desktop-updates.d.cts",
+      "require": "./dist/desktop-updates.cjs",
+      "default": "./dist/desktop-updates.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "tsconfig.json",
+    "LICENSING.md"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "npm run build && node --test",
     "prepack": "npm run build"
   },
-  "devDependencies": { "typescript": "5.9.3" }
+  "devDependencies": {
+    "@types/node": "24.19.2",
+    "typescript": "5.9.3"
+  }
 }
