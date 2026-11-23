@@ -1,0 +1,11 @@
+# Desktop update feeds
+
+The publisher reads Booth and Studio release manifests already published on Linode III. It uses exact release filenames, verifies every selected file against its published byte count and SHA-256 digest, and signs separate feeds for each platform and architecture. Each feed points to one version. A partial Studio release leaves its macOS feeds on the most recent retained release with usable Mac artifacts. The regular release downloads and archives remain in their existing trees.
+
+Install the Python 3.11+ publisher as `/opt/tpv-desktop-updates/publish-desktop-updates.py`, owned by root and mode 0644. Create the root-owned public directories `/srv/tpv-desktop-updates/booth` and `/srv/tpv-desktop-updates/studio` with mode 0755. The one Ed25519 PKCS#8 private key belongs at `/etc/tpv-desktop-updates/signing-ed25519.pem` with owner root and mode 0600. Keep it outside the public web roots and CI accounts. Both apps pin its corresponding public key.
+
+Install the supplied service and timer under `/etc/systemd/system`, reload the systemd configuration, and start the service to generate the first feeds. Include `apache-desktop-updates.conf` inside the release HTTPS virtual host before the general product aliases. Check Apache configuration and reload it after the feed files are present. The exact routes are `https://release.thepropervolume.com/{product}/updates/{platform}-{architecture}.json`. Enable the timer to pick up future releases within five minutes.
+
+Run `python3 /opt/tpv-desktop-updates/publish-desktop-updates.py --dry-run` as the server operator to inspect planned versions and verify artifact hashes without using the signing key or writing updates. The verification reads complete installers and can take several seconds. Check the journal for `tpv-desktop-updates.service` after publishing and verify the public feeds from the two desktop clients.
+
+The envelope contains unpadded base64url `payload` and `signature` fields. Verify the Ed25519 signature against the decoded payload bytes. The payload contains format 1, the product, a canonical version, and the immutable artifact names, sizes, digests, and platform identifiers. The web server serves only the generated feed names. Installers remain in their versioned release paths.

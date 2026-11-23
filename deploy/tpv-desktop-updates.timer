@@ -1,0 +1,10 @@
+[Unit]
+Description=Refresh TPV desktop update feeds every five minutes
+
+[Timer]
+OnCalendar=*:0/5
+Persistent=yes
+AccuracySec=30s
+
+[Install]
+WantedBy=timers.target
